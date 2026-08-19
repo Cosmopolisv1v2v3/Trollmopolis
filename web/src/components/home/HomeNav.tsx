@@ -12,7 +12,7 @@ export function HomeNav() {
   return (
     <header className="home-nav bg-(--bg-3)/30 shadow-sm">
       <Link href="/" className="auth-brand">
-        <LogoImage />
+        <LogoImage w={50} h={50} />
         Cosmopolis
       </Link>
 

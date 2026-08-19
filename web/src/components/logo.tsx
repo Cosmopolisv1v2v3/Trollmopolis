@@ -1,5 +1,5 @@
 import Image from "next/image";
 
-export function LogoImage({ src = "/logo.png" }) {
-  return <Image src={src} width={600} height={600} alt="Cosmopilos logo" />;
+export function LogoImage({ src = "/logo.png", w = 600, h = 600 }) {
+  return <Image src={src} width={w} height={h} alt="Cosmopilos logo" />;
 }
