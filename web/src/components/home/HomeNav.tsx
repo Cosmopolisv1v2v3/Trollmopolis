@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Icon } from "../icons";
 import { themeButtonInfo, useTheme } from "@/lib/theme-context";
+import { LogoImage } from "../logo";
 
 export function HomeNav() {
   const { theme, toggle } = useTheme();
@@ -11,12 +12,7 @@ export function HomeNav() {
   return (
     <header className="home-nav bg-(--bg-3)/30 shadow-sm">
       <Link href="/" className="auth-brand">
-        <span
-          className="brand-icon"
-          style={{ width: 30, height: 30, fontSize: 16 }}
-        >
-          🏰
-        </span>
+        <LogoImage />
         Cosmopolis
       </Link>
 

@@ -6,7 +6,7 @@ import { Icon, type IconName } from "./icons";
 import { SignOutButton } from "./SignOutButton";
 import { getRoleBadge } from "@/lib/utils";
 import type { Profile } from "@/lib/data";
-import Image from "next/image";
+import { LogoImage } from "./logo";
 
 const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/dashboard", label: "Dashboard", icon: "layout" },
@@ -52,12 +52,7 @@ export function Sidebar({
           title="Ir al inicio"
         >
           <div className="">
-            <Image
-              src={logo}
-              width={600}
-              height={600}
-              alt="Cosmopilos logo" // Siempre recomendado por accesibilidad
-            />
+            <LogoImage />
           </div>
           <div className="">
             <span className="brand-name">Cosmopolis</span>
