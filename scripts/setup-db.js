@@ -177,6 +177,12 @@ create table if not exists public.split_drafts (
   created_at timestamptz not null default now()
 );
 create index if not exists idx_drafts_owner on public.split_drafts(owner_id);
+-- Tabla nueva: hay que darle grants explícitos (los GRANT ALL de abajo no
+-- cubren tablas creadas después). También el default privileges por si se crean más.
+grant all on table public.split_drafts to anon, authenticated, service_role;
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+-- Solo el bot (service_role, que saltea RLS) debe leer/escribir drafts.
+alter table public.split_drafts enable row level security;
 
 -- ---------------------------------------------------------------------
 -- RPC para la WEB (crear/ajustar splits). SECURITY DEFINER con chequeo

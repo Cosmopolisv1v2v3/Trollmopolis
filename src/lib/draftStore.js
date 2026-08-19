@@ -25,7 +25,9 @@ async function getDraft(guildId, userId) {
   if (error || !data) return null;
   const expired = Date.now() - new Date(data.created_at).getTime() > TTL_MS;
   if (expired) {
-    await supabase.from(TABLE).delete().eq('key', key).catch(() => {});
+    try {
+      await supabase.from(TABLE).delete().eq('key', key);
+    } catch {}
     return null;
   }
   return { ...data.data, guildId, userId, ownerId: data.owner_id };
@@ -41,13 +43,14 @@ async function saveDraft(guildId, userId, draft) {
     created_at: new Date().toISOString(),
   };
   const { error } = await supabase.from(TABLE).upsert(row, { onConflict: 'key' });
-  // si el upsert pide más permisos de los que tiene el role... error se ignora aquí
   return !error;
 }
 
 async function clearDraft(guildId, userId) {
   const key = keyOf(guildId, userId);
-  await supabase.from(TABLE).delete().eq('key', key).catch(() => {});
+  try {
+    await supabase.from(TABLE).delete().eq('key', key);
+  } catch {}
 }
 
 module.exports = { getDraft, saveDraft, clearDraft, keyOf };
