@@ -397,7 +397,7 @@ begin
   if me.discord_id is null then
     raise exception 'No estás registrado en el sistema.';
   end if;
-  if not me.is_treasurer then
+  if not (me.is_treasurer or me.is_admin) then
     raise exception 'Solo tesoreros o administradores pueden pagar.';
   end if;
   if p_amount is null or p_amount <= 0 then
@@ -405,9 +405,6 @@ begin
   end if;
   if length(coalesce(p_reason,'')) < 3 then
     raise exception 'El motivo es obligatorio (mín. 3 caracteres).';
-  end if;
-  if p_discord_id = me.discord_id then
-    raise exception 'No podés pagarte a vos mismo.';
   end if;
   select * into target from public.users where discord_id = p_discord_id and guild_id = me.guild_id;
   if target.discord_id is null then
