@@ -325,7 +325,7 @@ async function ensureMembersFetched(interaction) {
   try {
     const guild = interaction.guild;
     if (!guild) return;
-    if (guild.members.cache.size < guild.memberCount && guild.memberCount > 100) {
+    if (guild.members.cache.size < guild.memberCount) {
       await guild.members.fetch().catch(() => {});
     }
   } catch {
@@ -337,14 +337,27 @@ async function ensureMembersFetched(interaction) {
 async function registeredGuildMemberList(interaction) {
   await ensureMembersFetched(interaction);
   const members = guildMemberList(interaction);
-  if (!members.length) return [];
   const { data: users } = await supabase
     .from('users')
-    .select('discord_id')
-    .in('discord_id', members.map((m) => m.id))
+    .select('discord_id, albion_name, display_nick')
     .eq('guild_id', interaction.guildId);
-  const known = new Set((users || []).map((u) => u.discord_id));
-  return members.filter((m) => known.has(m.id));
+
+  const byId = new Map((members || []).map((m) => [m.id, m]));
+  const shaped = (users || []).map((u) => {
+    const m = byId.get(u.discord_id);
+    if (m) {
+      return { instance: m, id: m.id, displayName: m.displayName || m.user.username, user: m.user };
+    }
+    // usuario registrado pero no en cache del bot (intent sin activar o cache parcial):
+    // lo mostramos igual con sus datos de la BD
+    return {
+      instance: null,
+      id: u.discord_id,
+      displayName: u.display_nick || u.albion_name || u.discord_id,
+      user: { username: u.display_nick || u.albion_name || '—' },
+    };
+  });
+  return shaped;
 }
 
 function pickerEmbed(guildId, userId, page, pageCount, draft, pageMembers, excludedCount) {
