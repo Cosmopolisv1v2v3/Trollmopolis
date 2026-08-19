@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { siteUrl } from "@/lib/site";
 
 /**
  * GET /auth/callback — Supabase redirige acá tras el OAuth con Discord.
@@ -8,9 +9,10 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
  * SOLO en el servidor (nunca se expone al cliente).
  */
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const next = searchParams.get("next") ?? "/dashboard";
   const code = searchParams.get("code");
+  const base = siteUrl() || new URL(request.url).origin;
 
   if (code) {
     const supabase = await createClient();
@@ -33,9 +35,9 @@ export async function GET(request: Request) {
       } catch (e) {
         console.error("No pude vincular el login con el registro del bot:", e);
       }
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${base}${next}`);
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent("No se pudo completar el login con Discord.")}`)
+  return NextResponse.redirect(`${base}/login?error=${encodeURIComponent("No se pudo completar el login con Discord.")}`)
 }
