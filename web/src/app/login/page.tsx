@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DiscordSignInButton } from "@/components/DiscordSignInButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Alert } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string; next?: string }>;
 }) {
-  const { error, next } = await searchParams;
+  const { error } = await searchParams;
 
   return (
     <div className="auth-page">
@@ -39,8 +40,9 @@ export default async function LoginPage({
             </p>
           </div>
 
-          {error && <p className="auth-error">{decodeURIComponent(error)}</p>}
-          {next && <input type="hidden" name="next" value={next} />}
+          {error && (
+            <Alert kind="error">{decodeURIComponent(error)}</Alert>
+          )}
 
           <div className="flex flex-col gap-3 pt-2">
             <DiscordSignInButton />

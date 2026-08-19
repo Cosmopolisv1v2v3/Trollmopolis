@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { friendlyError } from "@/lib/errors";
 
 export async function updateGuildSettingsAction(formData: FormData) {
   const supabase = await createClient();
@@ -14,7 +15,7 @@ export async function updateGuildSettingsAction(formData: FormData) {
     p_welcome_message: welcome || null,
   });
 
-  if (error) return { ok: false, error: error.message };
+  if (error) return { ok: false, error: friendlyError(error.message) };
   return { ok: true, error: null };
 }
 
@@ -34,6 +35,6 @@ export async function payUserAction(formData: FormData) {
     p_reason: reason,
   });
 
-  if (error) return { ok: false, error: error.message };
+  if (error) return { ok: false, error: friendlyError(error.message) };
   return { ok: true, error: null, data };
 }

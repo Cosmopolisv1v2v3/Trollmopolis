@@ -39,5 +39,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${base}/login?error=${encodeURIComponent("No se pudo completar el login con Discord.")}`)
+  return NextResponse.redirect(`${base}/login?error=${encodeURIComponent("No se pudo completar el login con Discord. Avisá a un administrador.")}`)
 }

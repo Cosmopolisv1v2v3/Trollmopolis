@@ -187,6 +187,32 @@ export function Tabs<T extends string>({
   );
 }
 
+/* ---------------- Alert ---------------- */
+export function Alert({
+  kind = "error",
+  children,
+  className = "",
+}: {
+  kind?: "error" | "success" | "info";
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      role={kind === "error" ? "alert" : "status"}
+      className={`alert ${kind === "success" ? "alert-ok" : kind === "info" ? "alert-info" : "alert-err"} ${className}`}
+    >
+      <span className="alert-ico">
+        <Icon
+          name={kind === "success" ? "check" : kind === "info" ? "sparkles" : "alert"}
+          size={17}
+        />
+      </span>
+      <span className="alert-body">{children}</span>
+    </div>
+  );
+}
+
 /* ---------------- Skeletons ---------------- */
 export function SkeletonRows({ n = 6 }: { n?: number }) {
   return (

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { payUserAction } from "./actions";
-import { Button } from "@/components/ui";
+import { Alert, Button } from "@/components/ui";
 import { fmtSilver } from "@/lib/format";
 
 interface Player {
@@ -27,7 +27,7 @@ export function PayForm({ players }: { players: Player[] }) {
           if (res.ok) {
             const data = res.data as { new_balance?: number; allow_negative?: boolean } | undefined;
             setFeedback(
-              `✅ Pago registrado. Nuevo saldo pendiente: ${fmtSilver(data?.new_balance)}` +
+              `Pago registrado. Nuevo saldo pendiente: ${fmtSilver(data?.new_balance)}` +
                 (data?.allow_negative ? " (queda a favor del gremio)" : "")
             );
             setError(null);
@@ -76,15 +76,11 @@ export function PayForm({ players }: { players: Player[] }) {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-[var(--red-soft)] bg-[var(--red-soft)] px-3 py-2 text-sm text-[var(--red)]">
-          {error}
-        </div>
+        <Alert kind="error">{error}</Alert>
       )}
 
       {feedback && (
-        <div className="rounded-lg border border-[var(--green-soft)] bg-[var(--green-soft)] px-3 py-2 text-sm text-[var(--green)]">
-          {feedback}
-        </div>
+        <Alert kind="success">{feedback}</Alert>
       )}
 
       <Button variant="gold" type="submit" icon="bank" disabled={pending}>

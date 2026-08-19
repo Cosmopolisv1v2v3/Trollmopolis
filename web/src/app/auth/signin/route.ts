@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { siteUrl } from "@/lib/site";
+import { friendlyError } from "@/lib/errors";
 
 /** POST /auth/signin — inicia OAuth con Discord y redirige. */
 export async function POST(request: Request) {
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
 
   if (error) {
     return NextResponse.redirect(
-      `${base}/login?error=${encodeURIComponent(error.message)}`
+      `${base}/login?error=${encodeURIComponent(friendlyError(error.message))}`
     );
   }
 

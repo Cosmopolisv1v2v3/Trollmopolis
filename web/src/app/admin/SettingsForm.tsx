@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateGuildSettingsAction } from "./actions";
-import { Button } from "@/components/ui";
+import { Alert, Button } from "@/components/ui";
 
 export function SettingsForm({
   guildId,
@@ -56,9 +56,7 @@ export function SettingsForm({
       </div>
 
       {error && (
-        <div className="rounded-lg border border-[var(--red-soft)] bg-[var(--red-soft)] px-3 py-2 text-sm text-[var(--red)]">
-          {error}
-        </div>
+        <Alert kind="error">{error}</Alert>
       )}
 
       <Button variant="gold" type="submit" icon="save" disabled={pending}>

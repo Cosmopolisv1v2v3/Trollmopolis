@@ -17,7 +17,9 @@ export function DiscordSignInButton({ full }: { full?: boolean }) {
           if (res.redirected) {
             window.location.href = res.url;
           } else {
-            router.push("/login?error=No se pudo iniciar el login.");
+            router.push(
+              `/login?error=${encodeURIComponent("No se pudo iniciar el login con Discord.")}`
+            );
           }
         })
       }

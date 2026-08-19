@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { friendlyError } from "@/lib/errors";
 
 export async function createSplitAction(formData: FormData) {
   const supabase = await createClient();
@@ -24,7 +25,7 @@ export async function createSplitAction(formData: FormData) {
     p_participants: participants,
   });
 
-  if (error) return { ok: false, error: error.message };
+  if (error) return { ok: false, error: friendlyError(error.message) };
   return { ok: true, error: null, data };
 }
 
@@ -46,7 +47,7 @@ export async function adjustSplitAction(formData: FormData) {
     p_reason: reason,
   });
 
-  if (error) return { ok: false, error: error.message };
+  if (error) return { ok: false, error: friendlyError(error.message) };
   return { ok: true, error: null };
 }
 
@@ -60,7 +61,7 @@ export async function paySplitCompleteAction(formData: FormData) {
     p_split_id: splitId,
   });
 
-  if (error) return { ok: false, error: error.message };
+  if (error) return { ok: false, error: friendlyError(error.message) };
   const d = data as { total?: number; participants?: number } | undefined;
   return {
     ok: true,

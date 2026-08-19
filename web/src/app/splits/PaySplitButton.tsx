@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { paySplitCompleteAction } from "./actions";
-import { Button } from "@/components/ui";
+import { Alert, Button } from "@/components/ui";
 import { Icon } from "@/components/icons";
 
 export function PaySplitButton({ splitId }: { splitId: string }) {
@@ -46,7 +46,7 @@ export function PaySplitButton({ splitId }: { splitId: string }) {
       >
         {pending ? "Pagando…" : armed ? "¿Confirmar pago?" : "Pagar completo"}
       </Button>
-      {error && <span className="text-xs text-[var(--red)]">{error}</span>}
+      {error && <Alert kind="error">{error}</Alert>}
       {armed && (
         <span className="inline-flex items-center gap-1 text-xs text-[var(--text-3)]">
           <Icon name="alert" size={13} />

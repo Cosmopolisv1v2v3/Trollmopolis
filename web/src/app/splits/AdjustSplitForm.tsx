@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { adjustSplitAction } from "./actions";
 import { fmtSilver } from "@/lib/format";
-import { Button } from "@/components/ui";
+import { Alert, Button } from "@/components/ui";
 
 export interface Row {
   discord_id: string;
@@ -64,9 +64,7 @@ export function AdjustSplitForm({ splitId, rows }: { splitId: string; rows: Row[
         </form>
       ))}
       {error && (
-        <div className="rounded-lg border border-[var(--red-soft)] bg-[var(--red-soft)] px-3 py-2 text-sm text-[var(--red)]">
-          {error}
-        </div>
+        <Alert kind="error">{error}</Alert>
       )}
     </div>
   );
