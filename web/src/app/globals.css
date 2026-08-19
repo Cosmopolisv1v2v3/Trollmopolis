@@ -190,7 +190,138 @@ select {
 
 .app {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+/* ==========================================================================
+   SITE HEADER (único, arriba en todas las páginas)
+   ========================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 26px;
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  flex-shrink: 0;
+}
+.site-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--bg-3);
+}
+.site-logo img {
+  object-fit: cover;
+}
+.site-brand-name {
+  font-family: var(--font-cinzel), serif;
+  font-weight: 900;
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  transition: color var(--transition);
+}
+.site-brand:hover .site-brand-name {
+  color: var(--gold);
+}
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.site-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background var(--transition), color var(--transition);
+  position: relative;
+}
+.site-link:hover {
+  color: var(--gold);
+  background: var(--hover);
+}
+.site-link.active {
+  color: var(--text);
+}
+.site-link.active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--gold);
+}
+.site-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.site-role {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+@media (max-width: 760px) {
+  .site-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+  .site-actions {
+    margin-left: auto;
+  }
+  .site-nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+  .site-nav::-webkit-scrollbar {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .site-brand-name {
+    font-size: 1.05rem;
+  }
+  .site-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .site-actions .site-role {
+    display: none !important;
+  }
 }
 .hidden {
   display: none !important;
@@ -2260,7 +2391,7 @@ input[type="datetime-local"] {
    CUENTAS Y AUTENTICACIÓN
    ========================================================================== */
 .auth-page {
-  min-height: 100dvh;
+  flex: 1;
   display: flex;
   flex-direction: column;
 }
@@ -2321,10 +2452,21 @@ input[type="datetime-local"] {
   margin: 0 auto 12px;
   display: grid;
   place-items: center;
-  font-size: 26px;
   border-radius: 16px;
   background: var(--gold-grad);
   box-shadow: var(--shadow-gold);
+  overflow: hidden;
+}
+.auth-ico-logo {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: var(--bg-3);
+}
+.auth-ico img {
+  object-fit: cover;
+  border-radius: 50%;
 }
 .auth-form {
   display: flex;
@@ -2406,7 +2548,7 @@ input[type="datetime-local"] {
    HOME PÚBLICA
    ========================================================================== */
 .home-page {
-  min-height: 100dvh;
+  flex: 1;
   display: flex;
   flex-direction: column;
 }

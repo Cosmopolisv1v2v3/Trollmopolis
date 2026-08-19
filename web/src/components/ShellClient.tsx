@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { Sidebar } from "./Sidebar";
-import { Topbar } from "./Topbar";
+import type { ReactNode } from "react";
+import { SiteHeader } from "./SiteHeader";
 import type { Profile } from "@/lib/data";
 
-/* Rutas sin el shell (páginas públicas y de autenticación con su propia cabecera) */
-const STANDALONE = ["/", "/login"];
+/* La home y el login son páginas públicas con su propio hero; el resto usa el
+ * contenedor con padding estándar debajo del header único. */
+const SHELL_ROUTES = ["/dashboard", "/splits", "/top", "/admin"];
 
 export function ShellClient({
   user,
@@ -20,44 +20,19 @@ export function ShellClient({
   isStaff: boolean;
   children: ReactNode;
 }) {
-  const [navOpen, setNavOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
-
-  useLayoutEffect(() => {
-    const mq = window.matchMedia("(max-width: 960px)");
-    const apply = () => {
-      setIsMobile(mq.matches);
-      if (mq.matches) setNavOpen(false);
-    };
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
-
-  useEffect(() => {
-    if (!isMobile) return;
-    const t = setTimeout(() => setNavOpen(false), 0);
-    return () => clearTimeout(t);
-  }, [pathname, isMobile]);
-
-  if (STANDALONE.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-    return <>{children}</>;
-  }
+  const inShell = SHELL_ROUTES.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
 
   return (
-    <div className={`app ${navOpen ? "" : "sidebar-collapsed"}`}>
-      <Sidebar
-        open={navOpen}
-        onClose={() => setNavOpen(true)}
-        isStaff={isStaff}
-        loggedIn={Boolean(user)}
-        profile={profile}
-      />
-      <div className="main-col">
-        <Topbar onNavOpen={() => setNavOpen((o) => !o)} isStaff={isStaff} userEmail={user?.email ?? null} profile={profile} loggedIn={Boolean(user)} />
+    <div className="app site-shell">
+      <SiteHeader loggedIn={Boolean(user)} profile={profile} isStaff={isStaff} />
+      {inShell ? (
         <main className="content">{children}</main>
-      </div>
+      ) : (
+        <>{children}</>
+      )}
     </div>
   );
 }
