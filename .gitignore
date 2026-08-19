@@ -1,0 +1,25 @@
+# --- Entorno / secretos ---
+.env
+.env.*
+!.env.example
+*.pem
+
+# --- Node ---
+node_modules/
+npm-debug.log*
+
+# --- Bot (raíz) ---
+bot.log
+bot.err.log
+*.log
+
+# --- Web (Next.js) ---
+web/.next/
+web/out/
+web/build
+web/.turbo/
+web/tsconfig.tsbuildinfo
+
+# --- Misc ---
+.DS_Store
+Thumbs.db
