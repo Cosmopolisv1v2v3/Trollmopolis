@@ -196,7 +196,7 @@ async function executeIniciar(interaction) {
     voiceCount: memberIds.length,
     manualCount: 0,
   };
-  saveDraft(interaction.guildId, interaction.user.id, draft);
+  await saveDraft(interaction.guildId, interaction.user.id, draft);
 
   const emb = draftEmbed(draft);
   emb.setDescription(`Canal usado: **${voice.name}**\n` + emb.data.description);
@@ -258,14 +258,14 @@ async function handleButton(interaction, customId) {
   if (customId.startsWith(P.close)) {
     const [guildId, userId] = sessionPart(customId, P.close);
     if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-    clearDraft(guildId, userId);
+    await clearDraft(guildId, userId);
     return interaction.update({ embeds: [], components: [], content: 'Borrador cerrado.' });
   }
 
   if (customId.startsWith(P.edit)) {
     const [guildId, userId] = sessionPart(customId, P.edit);
     if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-    const draft = getDraft(guildId, userId);
+    const draft = await getDraft(guildId, userId);
     if (!draft) return interaction.update({ embeds: [], components: [], content: 'El borrador expiró. Empezá de nuevo con /split iniciar.' });
 
     return renderPicker(interaction, guildId, userId, 0);
@@ -274,7 +274,7 @@ async function handleButton(interaction, customId) {
   if (customId.startsWith(P.amount)) {
     const [guildId, userId] = sessionPart(customId, P.amount);
     if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-    const draft = getDraft(guildId, userId);
+    const draft = await getDraft(guildId, userId);
     if (!draft) return interaction.update({ embeds: [], components: [], content: 'El borrador expiró. Empezá de nuevo con /split iniciar.' });
 
     const modal = new ModalBuilder()
@@ -369,7 +369,7 @@ function pickerEmbed(guildId, userId, page, pageCount, draft, pageMembers, exclu
 }
 
 async function renderPicker(interaction, guildId, userId, page) {
-  const draft = getDraft(guildId, userId);
+  const draft = await getDraft(guildId, userId);
   if (!draft) return interaction.update({ embeds: [], components: [], content: 'El borrador expiró. Empezá de nuevo con /split iniciar.' });
 
   const allMembers = guildMemberList(interaction);
@@ -432,7 +432,7 @@ async function handlePickerSelect(interaction, customId) {
   const [, , guildId, userId, pageStr] = customId.split(':');
   const page = Number(pageStr) || 0;
   if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-  const draft = getDraft(guildId, userId);
+  const draft = await getDraft(guildId, userId);
   if (!draft) return interaction.update({ embeds: [], components: [], content: 'El borrador expiró. Empezá de nuevo con /split iniciar.' });
 
   await ensureMembersFetched(interaction);
@@ -451,7 +451,7 @@ async function handlePickerSelect(interaction, customId) {
     }));
 
   const newDraft = { ...draft, participants: [...kept, ...added] };
-  saveDraft(guildId, userId, newDraft);
+  await saveDraft(guildId, userId, newDraft);
   return renderPicker(interaction, guildId, userId, page);
 }
 
@@ -460,7 +460,7 @@ async function handlePickerButton(interaction, customId) {
   if (customId.startsWith(P.pickDone)) {
     const [, , guildId, userId] = customId.split(':');
     if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-    const draft = getDraft(guildId, userId);
+    const draft = await getDraft(guildId, userId);
     if (!draft) return interaction.update({ embeds: [], components: [], content: 'El borrador expiró. Empezá de nuevo con /split iniciar.' });
     const emb = draftEmbed(draft);
     return interaction.update({ embeds: [emb], components: draftButtons(guildId, userId) });
@@ -481,7 +481,7 @@ async function handleModal(interaction, customId) {
   if (base === MODAL_EDIT) {
     const [, guildId, userId] = customId.split(':');
     if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-    const draft = getDraft(guildId, userId);
+    const draft = await getDraft(guildId, userId);
     if (!draft) return interaction.reply({ content: 'El borrador expiró.', flags: MessageFlags.Ephemeral });
 
     const rawParticipants = interaction.fields.getTextInputValue('participants');
@@ -509,14 +509,14 @@ async function handleModal(interaction, customId) {
     const voiceCount = draftsPrev.length - manualCount;
 
     const newDraft = { participants: newParts, voiceCount: Math.max(0, voiceCount), manualCount };
-    saveDraft(guildId, userId, newDraft);
+    await saveDraft(guildId, userId, newDraft);
     return interaction.update({ embeds: [draftEmbed(newDraft)], components: draftButtons(guildId, userId) });
   }
 
   if (base === MODAL_AMOUNT) {
     const [, guildId, userId] = customId.split(':');
     if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-    const draft = getDraft(guildId, userId);
+    const draft = await getDraft(guildId, userId);
     if (!draft) return interaction.reply({ content: 'El borrador expiró.', flags: MessageFlags.Ephemeral });
 
     const total = Number(interaction.fields.getTextInputValue('total').replace(/[^\d]/g, ''));
@@ -535,7 +535,7 @@ async function handleModal(interaction, customId) {
       const allRegistered = await areAllRegistered(guildId, draft.participants);
       if (!allRegistered.ok) {
         // guardar los datos del cófre para el botón que decide seguir sin los no registrados
-        saveDraft(guildId, userId, { ...draft, pending: { total, tax, location } });
+        await saveDraft(guildId, userId, { ...draft, pending: { total, tax, location } });
 
         const unregList = allRegistered.unregistered
           .map((p) => `• **${p.tag}** — <@${p.discord_id}>`)
@@ -656,14 +656,14 @@ async function finalizeSplit(interaction, guildId, userId, participants, { total
       .catch(() => {});
   }
 
-  clearDraft(guildId, userId);
+  await clearDraft(guildId, userId);
 }
 
 /** Botón "Seguir sin estos usuarios": descarta los no registrados y crea el split. */
 async function handleUnregButton(interaction, customId) {
   const [guildId, userId] = sessionPart(customId, P.unreg);
   if (interaction.user.id !== userId) return interaction.reply({ content: 'Este menú no es tuyo.', flags: MessageFlags.Ephemeral });
-  const draft = getDraft(guildId, userId);
+  const draft = await getDraft(guildId, userId);
   if (!draft || !draft.pending) {
     return interaction.update({ embeds: [], components: [], content: 'El borrador expiró. Empezá de nuevo con /split iniciar.' });
   }

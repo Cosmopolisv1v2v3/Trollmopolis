@@ -167,6 +167,18 @@ create unique index if not exists uq_tx_split_credit
   where reference_id is not null;
 
 -- ---------------------------------------------------------------------
+-- 8b. split_drafts — borradores de split persistidos (sobreviven reinicios del bot)
+-- ---------------------------------------------------------------------
+create table if not exists public.split_drafts (
+  key text primary key,
+  owner_id text not null,
+  guild_id text not null,
+  data jsonb not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists idx_drafts_owner on public.split_drafts(owner_id);
+
+-- ---------------------------------------------------------------------
 -- RPC para la WEB (crear/ajustar splits). SECURITY DEFINER con chequeo
 -- interno de staff + auth.uid(); solo así la web puede operar de forma
 -- atómica (split + participantes + wallets + transacciones).
